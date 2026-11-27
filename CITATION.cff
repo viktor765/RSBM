@@ -11,7 +11,7 @@ license: MIT
 date-released: 2026-07-07
 url: "https://github.com/viktor765/RSBM"
 preferred-citation:
-  type: article
+  type: conference-paper
   title: "Reflected Schrödinger Bridge Matching"
   authors:
     - family-names: "Häggbom"
@@ -23,5 +23,7 @@ preferred-citation:
     - family-names: "Andén"
       given-names: "Joakim"
   year: 2026
-  journal: "arXiv preprint arXiv:2607.03626"
+  conference:
+    name: "NeurIPS 2026"
+  collection-title: "Advances in Neural Information Processing Systems"
   url: "https://arxiv.org/abs/2607.03626"

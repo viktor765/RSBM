@@ -1,0 +1,130 @@
+[
+  {
+    "params": {
+      "dataset": "checkerboard",
+      "phase": 1,
+      "seed": 20261105,
+      "n_samples": 4096,
+      "n_batches": 300,
+      "n_in_mean": 3,
+      "percentile": 95,
+      "subdivisions_per_checker_cell": 16
+    },
+    "value": 0.022817370915815444
+  },
+  {
+    "params": {
+      "dataset": "uniform_box",
+      "phase": 1,
+      "seed": 20261105,
+      "n_samples": 4096,
+      "n_batches": 300,
+      "n_in_mean": 3,
+      "percentile": 95,
+      "subdivisions_per_checker_cell": 16
+    },
+    "value": 0.018309538000409638
+  },
+  {
+    "params": {
+      "target": 0,
+      "endpoints": [
+        {
+          "dataset": "image_density",
+          "domain": {
+            "lower": [
+              -6.283185307179586,
+              -6.283185307179586
+            ],
+            "upper": [
+              6.283185307179586,
+              6.283185307179586
+            ]
+          },
+          "n_samples": 100000,
+          "image_path": "data/figs/erwin-schrodinger.jpg",
+          "image_height": 288,
+          "preprocessing": "resize_aspect",
+          "autocontrast": false,
+          "eps": 0.0,
+          "gamma": 3.2,
+          "blur": 1.0
+        },
+        {
+          "dataset": "image_density",
+          "domain": {
+            "lower": [
+              -6.283185307179586,
+              -6.283185307179586
+            ],
+            "upper": [
+              6.283185307179586,
+              6.283185307179586
+            ]
+          },
+          "n_samples": 100000,
+          "image_path": "data/figs/oresundsbron.jpg",
+          "image_height": 288,
+          "density": "bridge_segmentation"
+        }
+      ],
+      "seed": 20261105,
+      "n_samples": 4096,
+      "n_batches": 300,
+      "n_in_mean": 3,
+      "percentile": 95
+    },
+    "value": 0.026377401118542514
+  },
+  {
+    "params": {
+      "target": 1,
+      "endpoints": [
+        {
+          "dataset": "image_density",
+          "domain": {
+            "lower": [
+              -6.283185307179586,
+              -6.283185307179586
+            ],
+            "upper": [
+              6.283185307179586,
+              6.283185307179586
+            ]
+          },
+          "n_samples": 100000,
+          "image_path": "data/figs/erwin-schrodinger.jpg",
+          "image_height": 288,
+          "preprocessing": "resize_aspect",
+          "autocontrast": false,
+          "eps": 0.0,
+          "gamma": 3.2,
+          "blur": 1.0
+        },
+        {
+          "dataset": "image_density",
+          "domain": {
+            "lower": [
+              -6.283185307179586,
+              -6.283185307179586
+            ],
+            "upper": [
+              6.283185307179586,
+              6.283185307179586
+            ]
+          },
+          "n_samples": 100000,
+          "image_path": "data/figs/oresundsbron.jpg",
+          "image_height": 288,
+          "density": "bridge_segmentation"
+        }
+      ],
+      "seed": 20261105,
+      "n_samples": 4096,
+      "n_batches": 300,
+      "n_in_mean": 3,
+      "percentile": 95
+    },
+    "value": 0.024293584918061384
+  }
+]

@@ -2,3 +2,6 @@ type: brownian
 short_name: non-refl
 sigma: 1.0
 euler_steps: 30
+noise_on_last_step: true
+project_last_step: false  # unused without reflection
+n_reflections: null  # unused without reflection

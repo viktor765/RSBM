@@ -1,81 +1,57 @@
 import argparse
 import logging
-import os
 
-from omegaconf import DictConfig, OmegaConf
-
-from src import data_utils, models, utils
-from src.rsbm import create_sde_and_bridge, trainers
+from src.evaluation import posthoc
 
 logger = logging.getLogger(__name__)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Run evaluation of model at checkpoint."
-    )
-    parser.add_argument("dir", type=str, help="Path to config file.")
-    parser.add_argument(
-        "--config",
-        type=str,
-        default=None,
-        help="Explicit choice of config file, otherwise inferred",
-    )
-    args = parser.parse_args()
-    checkpoint_dir = args.dir
-    if os.path.isfile(checkpoint_dir):
-        checkpoint_dir = os.path.dirname(checkpoint_dir)
-
-    out_dir = os.path.split(os.path.split(checkpoint_dir)[0])[0]
-
-    if args.config is None:
-        config_path = os.path.join(out_dir, ".hydra", "config.yaml")
-    else:
-        config_path = args.config
-
-    print(checkpoint_dir)
-    print(config_path)
-
-    config = OmegaConf.load(config_path)
-    assert isinstance(config, DictConfig), f"Expected DictConfig, got {type(config)}"
-    config.out_dir = out_dir
-    config.training.resume.dir = checkpoint_dir
-    config.eval.compute_fid = True
-    return config
-
-
-def main(cfg: DictConfig):
-    logger.info("Config:")
-    logger.info(OmegaConf.to_yaml(cfg))
-
-    utils.set_seed(cfg.seed)
-
-    model = models.create_model(cfg.model)
-    sde, bridge = create_sde_and_bridge(
-        cfg.sde, data_utils.get_data_normalization(cfg.data)
-    )
-
-    logger.info(
-        f"Model size (nbr of params): {sum(p.numel() for p in model.parameters() if p.requires_grad)}"
-    )
-
-    if cfg.method == "alpha_imf":
-        trainer_class = trainers.get_trainer(model.__class__)
-        trainer = trainer_class(
-            model=model,
-            sde=sde,
-            bridge=bridge,
-            training_conf=cfg.training,
-            eval_conf=cfg.eval,
-            data_conf=cfg.data,
-            seed=cfg.seed,
-            out_dir=cfg.out_dir,
+        description=(
+            "Evaluate a final model file, with final artifacts, using the run "
+            "config stored in it. Needs no training checkpoint or run directory."
         )
-    else:
-        raise NotImplementedError(f"Method {cfg.method} not implemented.")
+    )
+    parser.add_argument(
+        "model",
+        help="Path to final_model_<weights>.safetensors, or an evaluation's model.safetensors.",
+    )
+    parser.add_argument(
+        "overrides",
+        nargs="*",
+        help=(
+            "key=value evaluation settings, e.g. eval.n_samples=1024 or "
+            f"sde.euler_steps=200. Allowed: {', '.join(posthoc.OVERRIDABLE)}."
+        ),
+    )
+    parser.add_argument(
+        "--out",
+        default=None,
+        help=(
+            "New output directory; default <run>/posthoc/<launch time> for "
+            "<run>/checkpoints/<model>, else posthoc/<launch time> beside the model."
+        ),
+    )
+    parser.add_argument(
+        "--device",
+        default=None,
+        help="Torch device; default the one training would use.",
+    )
+    return parser.parse_args()
 
-    trainer.evaluate(final_artifacts=True)
+
+def main():
+    args = parse_args()
+    out_dir = posthoc.default_out_dir(args.model) if args.out is None else args.out
+    logging.basicConfig(
+        level=logging.INFO,
+        format="[%(asctime)s][%(name)s][%(levelname)s] - %(message)s",
+    )
+    logger.info(f"Evaluating {args.model} into {out_dir}")
+    posthoc.evaluate_final_model(args.model, out_dir, args.overrides, args.device)
+    logger.info("Evaluation completed")
 
 
 if __name__ == "__main__":
-    main(parse_args())
+    main()

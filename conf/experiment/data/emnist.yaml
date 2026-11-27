@@ -1,2 +1,5 @@
 dataset: emnist
+domain:  # domain where sampling actually occurs
+  lower: [-1.0]
+  upper: [1.0]
 labels: ['a', 'b', 'c', 'd', 'e']  # yields both upper- and lowercase

@@ -1,8 +1,22 @@
 checkpoint:
-  frequency: 10_000
+  pretrain_frequency: 10_000
+  # RSBM finetuning cadence in global updates; defaults to the pretrain cadence.
+  finetune_frequency: ${training.checkpoint.pretrain_frequency}
+  # null keeps all numbered recovery checkpoints; an integer keeps the latest K.
+  keep_last: 1
+optimizer: adam
+weight_decay: 0.0
 resume:
   dir: null
 max_grad_norm: 1.0
+# Linear warmup of pretrain_lr; finetuning runs at a constant finetune_lr.
 lr_warmup_steps: 0
-mixed_precision: "no"
 compile_ema: false
+# torch.compile the trained model for its training-update passes.
+compile_model: false
+# Precision of the network's passes, fp32 | bf16 (autocast): in training
+# updates (targets, losses, weights and optimizer state stay fp32), and when
+# simulating finetuning endpoints (Euler states, noise and reflection stay fp32).
+# Evaluation always runs in fp32.
+precision: fp32
+finetune_sampling_precision: fp32

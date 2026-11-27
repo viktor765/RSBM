@@ -10,17 +10,31 @@ data:
   data0:
     dataset: afhq64
     labels: [cat]
+    domain:  # domain where sampling actually occurs
+      lower: [-1.0]
+      upper: [1.0]
   data1:
     dataset: afhq64
     labels: [wild]
+    domain:
+      lower: [-1.0]
+      upper: [1.0]
   num_workers: 4
   pin_memory: true
 
 eval:
-  freq: 2_500
+  freq: 10_000
   n_samples: 64
+  weights: [ema]  # the weight sets each evaluation scores
+  compute_fid: true
+  compute_kid: true
   compute_lpips: true
+  retention:
+    model_snapshots: true
 
 sde:
   euler_steps: 100
   sigma: 0.75
+  # Images end on the last step's mean, projected into the box (see README).
+  noise_on_last_step: false
+  project_last_step: true

@@ -2,4 +2,6 @@ type: reflected
 short_name: refl
 sigma: 1.0
 euler_steps: 30
-n_reflections: 11
+n_reflections: 11  # or auto: bridge image count from sigma / smallest box width
+noise_on_last_step: true
+project_last_step: false

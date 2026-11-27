@@ -22,7 +22,12 @@ def update_ema(base_model: nn.Module, ema_model: nn.Module, ema_rate: float) -> 
 
 
 def direction_to_01(direction, batch_size: int, device: th.device) -> th.Tensor:
-    # Replicate convention used in De Bortoli et al. (2024) "alpha-IMF"
+    # Replicate convention used in De Bortoli et al. (2024) "alpha-IMF".
+    # A tensor of +1/-1 values gives each sample its own direction.
+    if isinstance(direction, th.Tensor):
+        if direction.shape != (batch_size,):
+            raise ValueError("A direction tensor needs one direction per sample.")
+        return (direction == 1).to(device=device, dtype=th.int64)
     if direction == 1:
         return th.ones(batch_size, device=device, dtype=th.int64)
     elif direction == -1:

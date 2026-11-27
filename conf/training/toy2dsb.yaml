@@ -1,11 +1,25 @@
 defaults:
   - base
   - _self_
-lr: 0.001
+pretrain_lr: 0.0006
+finetune_lr: 0.0003
 adam_betas: [0.9, 0.999]
-use_ema: false
-ema_rate: 0.999
+max_grad_norm: null
+# EMA weights simulate the finetuning paths, at RSB-FBSDE's rate; eval.weights
+# picks the evaluated ones.
+use_ema: true
+ema_rate: 0.99
 batch_size: 1024
-n_pretrain_steps: 50_000
-n_finetune_steps: 5_000
+# Endpoint pairs simulated per finetuning refill, a multiple of batch_size;
+# each refill serves cache_size / batch_size updates.
+cache_size: ${training.batch_size}
+# Training stops at the update limit or once training_seconds reaches this,
+# whichever comes first. n_finetune_steps may be null only with a time limit.
+max_training_seconds: null
+# About one training hour with three seeds sharing one A100.
+n_pretrain_steps: 20_000
+n_finetune_steps: 10_000
 log_freq: 500
+checkpoint:
+  # Only the final checkpoint.
+  pretrain_frequency: null

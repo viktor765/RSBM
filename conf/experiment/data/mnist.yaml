@@ -1,2 +1,5 @@
 dataset: mnist
+domain:  # domain where sampling actually occurs
+  lower: [-1.0]
+  upper: [1.0]
 labels: null

@@ -6,8 +6,8 @@ From: nvcr.io/nvidia/pytorch:25.11-py3
 
 %post
     python -m pip install --no-cache-dir \
-        accelerate \
-        hydra-core \
-        wandb \
-        torchmetrics[image] \
-        POT
+        accelerate==1.15.0 \
+        hydra-core==1.3.7 \
+        torchmetrics[image]==1.9.0 \
+        torch-fidelity==0.4.0 \
+        POT==0.9.7.post1

@@ -17,7 +17,6 @@ class UNet(UNetModel):
         dims=2,
         num_classes=None,
         use_checkpoint=False,
-        use_fp16=False,
         num_heads=1,
         num_head_channels=-1,
         num_heads_upsample=-1,
@@ -39,7 +38,7 @@ class UNet(UNetModel):
             dims,
             num_classes,
             use_checkpoint,
-            use_fp16,
+            False,  # use_fp16: full precision only
             num_heads,
             num_head_channels,
             num_heads_upsample,

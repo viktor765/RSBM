@@ -1,31 +1,39 @@
 # @package _global_
+# Schrodinger portrait -> Oresund bridge photo on [-2pi, 2pi]^2, with
+# uniform_to_checkerboard's network, reference process, solver and evaluation,
+# so each method's checkerboard recipe carries over unscaled.
 defaults:
   - data@data.data0: schrodinger
   - data@data.data1: oresundsbron
-  - override /model: toy2d
+  - override /sde: reflected
+  - override /model: toy_policy
   - override /training: toy2dsb
   - _self_
 
-experiment_short_name: toy-so
+experiment_short_name: schrodinger-to-oresund
 
+model:
+  # Upstream RSB-FBSDE's parametrization, for both methods: the networks
+  # output the control Z and the drift is sde.sigma * Z.
+  output: control
 data:
   num_workers: 0
   pin_memory: false
-
 sde:
+  sigma: 0.5
   euler_steps: 100
-  sigma: 0.15
-
+  n_reflections: 9
 eval:
-  freq: 250
-  n_samples: 5_000
+  freq: 60  # in freq_unit, for both methods, from step 0
+  # iterations (optimizer updates) or seconds (of training_seconds).
+  freq_unit: seconds
+  # Paths per direction and evaluation; W2 uses all of them.
+  n_samples: 4096
+  # Both methods score their EMA weights, which also sample training paths
+  # (training.use_ema).
+  weights: [ema]
   toy2d:
-    w2_samples: 4096
-    w2_seed: 0
     final_artifacts: true
+    # Figures only: denser snapshots show the images.
     n_snapshot_times: 5
     n_snapshot_particles: 2500
-    n_gif_paths: 128
-    n_gif_frames: 31
-    vector_grid_size: 21
-    boundary_eps: 0.001

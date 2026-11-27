@@ -11,7 +11,6 @@ def sample_direction(
     direction: DirectionSpec,
     device: th.device,
     generator: th.Generator,
-    autocast,
     return_trajectory: bool = False,
 ):
     sampled = sde.forward_euler(
@@ -19,10 +18,10 @@ def sample_direction(
         source.to(device),
         direction=direction.sampling_direction,
         generator=generator,
-        autocast=autocast,
         return_trajectory=return_trajectory,
     )
     if return_trajectory:
-        final, trajectory = sampled
-        return final.cpu(), trajectory.cpu()
+        return type(sampled)(
+            *(value.cpu() if value is not None else None for value in sampled)
+        )
     return sampled.cpu()

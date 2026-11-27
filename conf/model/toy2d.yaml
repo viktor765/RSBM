@@ -1,5 +1,6 @@
 type: litenet
 directional: true
+output: drift  # drift, or control: the network outputs Z and the drift is sde.sigma * Z
 args:
   input_dim: 2
   time_embed_dim: 32

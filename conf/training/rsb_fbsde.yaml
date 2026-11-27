@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: Apache-2.0
+# Adapted from upstream default_checkerboard_config.py, options.py, runner.py.
+# Modified: both directions in every stage, the paper's local-time term (with
+# weight 2), EMA keys, source traversal, shuffled trajectory caches and their
+# size (upstream's samp_bs is 4000).
+# See src/rsb_fbsde/README.md for provenance.
+# About two training hours with three seeds sharing one A100.
+num_stages: 20
+num_epochs: 1
+iterations_per_epoch: 800
+# Paths per directional block, one simulation pass. A positive multiple of
+# batch_size.
+cache_size: 262144
+# Training stops after num_stages or once training_seconds reaches this,
+# whichever comes first. num_stages may be null only with a time limit.
+max_training_seconds: null
+# Paths per update, each with all its intervals, in one gradient pass.
+batch_size: 1024
+# Time quadrature for both the running and boundary integrals, in the sampler's
+# clock: left | right | trapezoidal. Trapezoidal averages the interval endpoints,
+# evaluating each grid state once; each boundary point is used at both times.
+loss_quadrature: trapezoidal
+# Spatial boundary evaluation: projection | crossing. Crossing retains each
+# edge's segment intersection and normal correction separately at corners.
+boundary_evaluation: projection
+lr: 0.0003
+adam_betas: [0.9, 0.999]
+weight_decay: 0.0
+lr_gamma: 0.8
+lr_step: 1000
+# EMA weights sample the training paths, as upstream; eval.weights picks the
+# evaluated ones.
+use_ema: true
+ema_rate: 0.99
+max_grad_norm: null
+# hutchinson_gaussian (upstream's one-probe estimate) | hutchinson_rademacher | exact
+divergence: hutchinson_gaussian
+device: auto
+num_threads: null
+log_freq: 100
+checkpoint:
+  # Updates between recovery checkpoints (checkpoints/c_latest); null writes
+  # only the final one.
+  frequency: null
+resume:
+  dir: null

@@ -2,13 +2,28 @@ defaults:
   - sde: brownian
   - model: ???
   - training: ???
-  - experiment: ???
+  # Experiment presets override the settings below.
   - _self_
-method: alpha_imf
-seed: 2146011968  # generated with secrets.randbits(32)
+  - experiment: ???
+  - debug: "off"
+method: ${oc.select:experiment_method,alpha_imf}
+seed: 0
 experiment_short_name: ???
+# A run's directory is <output_root>/<run_name>; debug=on adds a launch time.
+# A fresh run refuses an occupied directory, and a run resumed with
+# training.resume.dir continues in its checkpoint's directory. Variants of a
+# preset (sweeps, ablations) set run_name. Evaluation-set plots are shared
+# under <output_root>/datasets.
+run_name: ${experiment_short_name}/${method}/${sde.short_name}/sigma${sde.sigma}/seed${seed}
 out_dir: ${hydra:run.dir}
-eval: ???
+eval:
+  retention:
+    # Exact toy endpoint inputs and per-path costs at every evaluation.
+    toy_records: true
+    # Evaluated weights at every evaluation, separate from resumable training
+    # checkpoints.
+    model_snapshots: false
 hydra:
-  run:
-    dir: outputs/${experiment_short_name}/${sde.short_name}/${now:%Y-%m-%d}/${now:%H-%M}
+  # train.py writes the launch's .hydra/ record itself, after checking the run
+  # directory.
+  output_subdir: null

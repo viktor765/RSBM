@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+# Upstream RSB-FBSDE toy network (models/toy_model/Toy.py), one per direction;
+# see src/rsb_fbsde/README.md.
+type: toy_policy
+directional: false
+output: drift  # drift, or control: the network outputs Z and the drift is sde.sigma * Z
+args:
+  interval: 100
+  hidden_dim: 256
+  time_embed_dim: 128
+  num_res_blocks: 3

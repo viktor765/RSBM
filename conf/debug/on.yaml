@@ -1,0 +1,6 @@
+# @package _global_
+# Debug runs live in their own tree, with a new directory per launch.
+output_root: outputs/debug
+hydra:
+  run:
+    dir: ${output_root}/${run_name}/${now:%Y-%m-%d_%H-%M-%S}

@@ -1,5 +1,6 @@
 type: UNet
 directional: true
+output: drift  # drift, or control: the network outputs Z and the drift is sde.sigma * Z
 args:
   image_size: 28
   in_channels: 1

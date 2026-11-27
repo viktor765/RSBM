@@ -1,4 +1,3 @@
-# (D)irectional U-Net
 from collections.abc import Hashable
 
 import torch as th
@@ -6,7 +5,8 @@ import torch.nn as nn
 
 
 class MultiNet(nn.Module):
-    # Wrapper for multiple UNets
+    """One network per direction, called with the direction as key."""
+
     def __init__(self, module_dict: dict[Hashable, nn.Module]):
         super().__init__()
         self.nets = {}

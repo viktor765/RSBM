@@ -1,2 +1,9 @@
+# Checkerboard of 4x4 cells of width pi on [-2pi, 2pi]^2, the layout of
+# upstream rSB-FBSDE's toy data. Both methods use this definition; its phase
+# need not match upstream's.
 dataset: checkerboard
-n_samples: 10_000
+phase: 1
+domain:
+  lower: [-6.283185307179586, -6.283185307179586]
+  upper: [6.283185307179586, 6.283185307179586]
+n_samples: 100_000

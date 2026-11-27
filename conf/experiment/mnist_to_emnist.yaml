@@ -6,12 +6,22 @@ defaults:
   - override /training: mnist
   - _self_
 
-experiment_short_name: mnist
+experiment_short_name: mnist-to-emnist
+
+sde:
+  # Images end on the last step's mean, projected into the box (see README).
+  noise_on_last_step: false
+  project_last_step: true
 
 data:
   num_workers: 2
   pin_memory: true
 
 eval:
-  freq: 2_500
+  freq: 10_000
   n_samples: 64
+  weights: [ema]  # the weight sets each evaluation scores
+  compute_fid: true
+  compute_kid: true
+  retention:
+    model_snapshots: true

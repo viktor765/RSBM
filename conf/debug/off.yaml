@@ -1,0 +1,5 @@
+# @package _global_
+output_root: outputs
+hydra:
+  run:
+    dir: ${output_root}/${run_name}

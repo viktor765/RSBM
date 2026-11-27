@@ -1,0 +1,11 @@
+# @package _global_
+# SPDX-License-Identifier: Apache-2.0
+# Adapted from upstream default_checkerboard_config.py to uniform_to_checkerboard,
+# with a larger shuffled trajectory cache and the data, SDE and network shared
+# with RSBM; see src/rsb_fbsde/README.md for provenance and adaptations.
+defaults:
+  - uniform_to_checkerboard
+  - override /training: rsb_fbsde
+  - _self_
+
+experiment_method: rsb_fbsde

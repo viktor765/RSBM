@@ -443,8 +443,8 @@ def plot_snapshots_and_vector_fields(
     paths: np.ndarray,
     model: th.nn.Module,
     direction: int,
+    domain,
     device: th.device,
-    autocast,
     dir: str,
     file_name: str,
     n_times: int,
@@ -453,13 +453,20 @@ def plot_snapshots_and_vector_fields(
     extension: str = "png",
     enumerate_existing: bool = True,
 ) -> None:
+    """Plot unit-square ``paths`` and the model drift on a unit-square grid.
+
+    ``domain`` maps sampling coordinates to the unit square. The model is
+    evaluated on the grid mapped back to sampling coordinates, and its drift
+    is rescaled to unit-square coordinates.
+    """
     os.makedirs(dir, exist_ok=True)
     time_indices = np.linspace(0, paths.shape[1] - 1, n_times).round().astype(int)
     particles = select_evenly_spaced(paths, n_particles)
     grid_axis = np.linspace(0, 1, vector_grid_size, dtype=np.float32)
     xx, yy = np.meshgrid(grid_axis, grid_axis)
     grid_np = np.column_stack([xx.ravel(), yy.ravel()])
-    grid = th.from_numpy(grid_np).to(device=device)
+    grid = domain.inv(th.from_numpy(grid_np)).to(device=device)
+    width = np.subtract(domain.upper, domain.lower, dtype=np.float32)
 
     fig, axes = plt.subplots(2, n_times, figsize=(2.2 * n_times, 4.8))
     if n_times == 1:
@@ -480,8 +487,9 @@ def plot_snapshots_and_vector_fields(
         ax.set_title(f"t = {t_value:.2f}")
 
         t = th.full((grid.shape[0],), t_value, device=device, dtype=grid.dtype)
-        with th.no_grad(), autocast():
+        with th.no_grad():
             vectors = model(grid, t, direction=direction).float().cpu().numpy()
+        vectors = vectors / width
         magnitudes = np.linalg.norm(vectors, axis=1)
         robust_max = max(float(np.percentile(magnitudes, 95)), 1e-8)
         scale = robust_max / 0.075

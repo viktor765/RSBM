@@ -1,7 +1,41 @@
+import math
+
 import torch as th
 
 from ..utils import make_broadcastable
 from .normalizations import Normalization
+
+
+def recommended_n_reflections(total_standard_deviation: float) -> int:
+    """Choose an odd image count for a unit-cube diffusion over [0, 1].
+
+    Pass max_i(sigma / box_width_i), NOT sigma in native coordinates. The
+    omitted probability and unit-coordinate score error are bounded by 1e-10
+    per coordinate, uniformly over endpoints and positive time intervals <= 1.
+    """
+    sigma = float(total_standard_deviation)
+    if not math.isfinite(sigma) or sigma <= 0:
+        raise ValueError("Automatic reflection truncation requires finite positive diffusion.")
+    if sigma > 2:
+        raise ValueError(
+            "Automatic reflection truncation is validated only through unit-cube "
+            "standard deviation 2.0. Set sde.n_reflections explicitly."
+        )
+    # m=2 is already sufficient at sigma=0.1 and below. This branch also
+    # avoids underflow of sigma**2 for very small positive diffusion.
+    if sigma <= 0.1:
+        return 5
+    variance = sigma**2
+    m = 2
+    while True:
+        # This makes both tail bounds monotone in variance up to sigma**2.
+        if m**2 >= 1 + 2 * variance:
+            factor = 2 * math.exp(-(m**2 - 1) / (2 * variance))
+            omitted_mass = factor * (1 + variance / m)
+            score_error = factor * ((2 * m + 1) / variance + 2 + 1 / m)
+            if max(omitted_mass, score_error) <= 1e-10:
+                return 2 * m + 1
+        m += 1
 
 
 class Reflector:

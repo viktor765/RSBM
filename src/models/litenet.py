@@ -32,33 +32,32 @@ class GaussianFourierProjection2d(nn.Module):
 class LiteNet(nn.Module):
     def __init__(self, input_dim=2, time_emb_dim=32):
         super().__init__()
-        # We embed the sigma level (noise level) so the net knows how coarse/fine to look
         self.embed = nn.Sequential(
             GaussianFourierProjection(time_emb_dim),
             nn.Linear(time_emb_dim, time_emb_dim),
             nn.SiLU(),
         )
 
-        # Embedding layer for the data
         self.data_embed = nn.Sequential(
             GaussianFourierProjection2d(input_dim=input_dim, embed_dim=64, scale=30.0),
             nn.Linear(64, 64),
             nn.SiLU(),
         )
 
-        # Input: Data (2) + Sigma Embedding (32)
+        # The state, its time embedding and its Fourier features.
         self.input_layer = nn.Linear(input_dim + time_emb_dim + 64, 512)
         self.mid_layer1 = nn.Linear(512, 512)
         self.mid_layer2 = nn.Linear(512, 512)
         self.output_layer = nn.Linear(512, input_dim)
+        # Zero output at initialization; the output layer still gets gradients.
+        nn.init.zeros_(self.output_layer.weight)
+        nn.init.zeros_(self.output_layer.bias)
 
         self.act = nn.SiLU()
 
     def forward(self, x, timesteps, y=None):
         if y is not None:
             raise NotImplementedError("Conditional LiteNet not implemented.")
-        # Embed the noise level index
-        # We normalize index 0..N to 0..1 for the embedding layer
         embed = self.embed(timesteps)
         data_embed = self.data_embed(x)
 
@@ -67,8 +66,6 @@ class LiteNet(nn.Module):
         h = self.act(self.mid_layer1(h))
         h = self.act(self.mid_layer2(h))
 
-        # Output is the unnormalized score
-        # Typically we divide result by sigma later for stability
         return self.output_layer(h)
 
 

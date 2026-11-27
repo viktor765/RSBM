@@ -7,6 +7,10 @@ Exceptions:
 - Third-party components retain their original copyright and license notices. In
   particular, `src/guided_diffusion/` contains OpenAI guided-diffusion code under
   the MIT License; see `src/guided_diffusion/README.md`.
+- `src/rsb_fbsde/` (except where a file states otherwise) and configuration files
+  with an Apache-2.0 SPDX header contain adaptations of Deng et al.'s reflected
+  SB-FBSDE implementation under the Apache License 2.0. See
+  `src/rsb_fbsde/LICENSE` and `src/rsb_fbsde/README.md`.
 
 MIT License
 
